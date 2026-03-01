@@ -20,6 +20,18 @@ This repo contains the white paper, the architectural framework, a **hands-on pr
 
 ---
 
+## The Five Pillars — At a Glance
+
+<div align="center">
+
+![The Five Pillars of the Agent Harness](five-pillars-poster.png)
+
+*The five architectural pillars rendered as structural cartography — open [five-pillars-poster.html](five-pillars-poster.html) locally for the full animated version*
+
+</div>
+
+---
+
 ## What Is the Agent Harness?
 
 An **agent harness** is the orchestration layer around a language model — the runtime that constructs context, executes tool calls, enforces guardrails, and decides when each loop iteration should continue or stop.

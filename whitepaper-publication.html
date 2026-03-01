@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Agent Harness — White Paper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   McKINSEY-QUALITY WHITEPAPER — PRINT-OPTIMIZED CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --navy:    #1B2A4A;
+  --navy-deep: #0F1B33;
+  --gold:    #C8973E;
+  --gold-light: #E8C97A;
+  --slate:   #3A4A5C;
+  --text:    #1A1A1A;
+  --text-secondary: #4A5568;
+  --text-light: #718096;
+  --bg:      #FFFFFF;
+  --bg-warm: #FAFAF8;
+  --bg-cold: #F7F8FA;
+  --border:  #E2E8F0;
+  --accent-green:  #2D6A4F;
+  --accent-blue:   #2B5EA7;
+  --accent-amber:  #C8973E;
+  --accent-red:    #B83230;
+  --accent-purple: #6B4C9A;
+}
+
+@page {
+  size: A4;
+  margin: 22mm 20mm 25mm 20mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: #718096;
+  }
+}
+
+@page :first {
+  margin-top: 0;
+  margin-bottom: 0;
+  @bottom-center { content: none; }
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  font-size: 10.5pt;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  line-height: 1.65;
+  background: var(--bg);
+}
+
+/* ─────────────── COVER PAGE ─────────────── */
+
+.cover {
+  page-break-after: always;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 60%, #243B5E 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -10%; right: -15%;
+  width: 60%; height: 70%;
+  background: radial-gradient(ellipse, rgba(200,151,62,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+}
+
+.cover-top-bar {
+  height: 3px;
+  background: var(--gold);
+}
+
+.cover-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 55px;
+}
+
+.cover-label {
+  font-size: 9pt;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 30px;
+}
+
+.cover h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34pt;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 18px;
+  max-width: 520px;
+}
+
+.cover h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15pt;
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.45;
+  max-width: 480px;
+  margin-bottom: 50px;
+}
+
+.cover-meta {
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 28px;
+  display: flex;
+  gap: 50px;
+}
+
+.cover-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cover-meta-label {
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.cover-meta-value {
+  font-size: 9.5pt;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+}
+
+.cover-footer {
+  padding: 20px 55px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.cover-footer span {
+  font-size: 7.5pt;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 1px;
+}
+
+/* ─────────────── BODY PAGES ─────────────── */
+
+.page {
+  page-break-before: always;
+  padding: 0;
+}
+
+.page:first-of-type {
+  page-break-before: auto;
+}
+
+/* ─────────────── SECTION HEADERS ─────────────── */
+
+.section-header {
+  margin-top: 42px;
+  margin-bottom: 22px;
+  page-break-after: avoid;
+}
+
+.section-header:first-child {
+  margin-top: 0;
+}
+
+.section-number {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8pt;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+h1.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.section-rule {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  margin-top: 10px;
+  border: none;
+}
+
+h2.subsection-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14pt;
+  font-weight: 600;
+  color: var(--navy);
+  margin-top: 30px;
+  margin-bottom: 12px;
+  page-break-after: avoid;
+}
+
+h3.minor-title {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: var(--slate);
+  margin-top: 20px;
+  margin-bottom: 8px;
+  page-break-after: avoid;
+}
+
+/* ─────────────── BODY TEXT ─────────────── */
+
+p {
+  margin-bottom: 12px;
+  text-align: justify;
+  hyphens: auto;
+  orphans: 3;
+  widows: 3;
+}
+
+strong { font-weight: 600; color: var(--navy); }
+em { font-style: italic; }
+
+/* ─────────────── PULL QUOTES ─────────────── */
+
+.pull-quote {
+  margin: 28px 0;
+  padding: 20px 28px;
+  border-left: 4px solid var(--gold);
+  background: var(--bg-warm);
+  page-break-inside: avoid;
+}
+
+.pull-quote p {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 13pt;
+  font-style: italic;
+  color: var(--navy);
+  line-height: 1.55;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.pull-quote .attribution {
+  font-family: 'Inter', sans-serif;
+  font-size: 8pt;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-top: 8px;
+  display: block;
+}
+
+/* ─────────────── EXECUTIVE SUMMARY BOX ─────────────── */
+
+.executive-summary {
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 100%);
+  color: white;
+  padding: 30px 32px;
+  border-radius: 4px;
+  margin-bottom: 28px;
+  page-break-inside: avoid;
+}
+
+.executive-summary h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16pt;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 16px;
+}
+
+.executive-summary p {
+  color: rgba(255,255,255,0.9);
+  line-height: 1.45;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.executive-summary strong {
+  color: var(--gold-light);
+}
+
+/* ─────────────── TABLES ─────────────── */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px 0;
+  font-size: 9pt;
+  page-break-inside: avoid;
+}
+
+thead th {
+  background: var(--navy);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 8.5pt;
+  letter-spacing: 0.3px;
+}
+
+thead th:first-child {
+  border-radius: 3px 0 0 0;
+}
+
+thead th:last-child {
+  border-radius: 0 3px 0 0;
+}
+
+tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--bg-cold);
+}
+
+tbody tr:last-child td {
+  border-bottom: 2px solid var(--navy);
+}
+
+tbody td strong {
+  color: var(--navy);
+}
+
+/* ─────────────── CODE BLOCKS (ARCHITECTURE DIAGRAMS) ─────────────── */
+
+.diagram-block {
+  background: #080e1a;
+  color: #A8C8E8;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.6;
+  padding: 20px 22px;
+  border-radius: 8px;
+  border-left: 3px solid rgba(200,151,62,0.4);
+  margin: 18px 0 24px 0;
+  overflow-x: auto;
+  white-space: pre;
+  page-break-inside: avoid;
+}
+
+.code-block {
+  background: #080e1a;
+  color: #a8c8e8;
+  border: 1px solid rgba(42,58,82,0.4);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.6;
+  padding: 16px 18px;
+  border-radius: 8px;
+  border-left: 3px solid rgba(200,151,62,0.4);
+  margin: 14px 0 20px 0;
+  overflow-x: auto;
+  white-space: pre;
+  page-break-inside: avoid;
+}
+
+.code-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ─────────────── PILLAR CARDS ─────────────── */
+
+.pillar-card {
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--accent-green);
+  border-radius: 4px;
+  padding: 22px 24px;
+  margin: 20px 0;
+  background: var(--bg);
+  page-break-inside: avoid;
+}
+
+.pillar-card.p1 { border-top-color: var(--accent-green); }
+.pillar-card.p2 { border-top-color: var(--accent-blue); }
+.pillar-card.p3 { border-top-color: var(--accent-amber); }
+.pillar-card.p4 { border-top-color: var(--accent-red); }
+.pillar-card.p5 { border-top-color: var(--accent-purple); }
+
+.pillar-card .pillar-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.pillar-card.p1 .pillar-tag { color: var(--accent-green); }
+.pillar-card.p2 .pillar-tag { color: var(--accent-blue); }
+.pillar-card.p3 .pillar-tag { color: var(--accent-amber); }
+.pillar-card.p4 .pillar-tag { color: var(--accent-red); }
+.pillar-card.p5 .pillar-tag { color: var(--accent-purple); }
+
+.pillar-card h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 13pt;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.pillar-card .guarantee {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.failure-sig {
+  background: rgba(184,50,48,0.04);
+  border: 1px solid rgba(184,50,48,0.15);
+  border-radius: 3px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+
+.failure-sig .fail-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  font-weight: 500;
+  color: var(--accent-red);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.failure-sig p {
+  font-size: 9pt;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+/* ─────────────── KEY INSIGHT BOX ─────────────── */
+
+.insight-box {
+  background: linear-gradient(135deg, #F0F4FF 0%, #EEF2FA 100%);
+  border: 1px solid #C6D4EA;
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin: 22px 0;
+  page-break-inside: avoid;
+}
+
+.insight-box .insight-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  font-weight: 600;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.insight-box p {
+  margin-bottom: 0;
+}
+
+/* ─────────────── NUMBERED LIST ─────────────── */
+
+ol.actions-list {
+  counter-reset: action-counter;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+ol.actions-list li {
+  counter-increment: action-counter;
+  position: relative;
+  padding: 12px 0 12px 48px;
+  border-bottom: 1px solid var(--border);
+  page-break-inside: avoid;
+}
+
+ol.actions-list li:last-child {
+  border-bottom: none;
+}
+
+ol.actions-list li::before {
+  content: counter(action-counter);
+  position: absolute;
+  left: 0; top: 12px;
+  width: 30px; height: 30px;
+  background: var(--navy);
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11pt;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 30px;
+}
+
+/* ─────────────── BULLET LIST ─────────────── */
+
+ul.bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 16px 0;
+}
+
+ul.bullet-list li {
+  position: relative;
+  padding: 4px 0 4px 18px;
+  line-height: 1.6;
+}
+
+ul.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 11px;
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 1px;
+}
+
+/* ─────────────── TWO COLUMN ─────────────── */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 16px 0;
+}
+
+/* ─────────────── SOURCES ─────────────── */
+
+.sources-list {
+  list-style: none;
+  padding: 0;
+}
+
+.sources-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 9pt;
+  line-height: 1.45;
+}
+
+.sources-list li:last-child { border-bottom: none; }
+
+.source-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  color: var(--gold);
+  margin-right: 6px;
+}
+
+/* ─────────────── ART & PHILOSOPHY PAGES ─────────────── */
+
+.art-page {
+  page-break-before: always;
+  background: var(--navy-deep);
+  color: white;
+  padding: 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.art-page h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+
+.art-page h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 13pt;
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 24px;
+}
+
+.art-page p {
+  color: rgba(255,255,255,0.8);
+  text-align: left;
+  line-height: 1.75;
+  max-width: 600px;
+}
+
+.art-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--gold);
+  margin: 24px 0;
+  border: none;
+}
+
+.art-philosophy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.art-concept {
+  border-left: 2px solid var(--gold);
+  padding-left: 18px;
+}
+
+.art-concept h3 {
+  font-size: 10pt;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.art-concept p {
+  font-size: 9pt;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ─────────────── BACK COVER ─────────────── */
+
+.back-cover {
+  page-break-before: always;
+  height: 100vh;
+  background: var(--navy);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px;
+}
+
+.back-cover .closing-quote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18pt;
+  font-style: italic;
+  line-height: 1.55;
+  max-width: 440px;
+  margin-bottom: 40px;
+  color: rgba(255,255,255,0.9);
+}
+
+.back-cover .closing-emphasis {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18pt;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.back-cover .license {
+  font-size: 8pt;
+  color: rgba(255,255,255,0.3);
+  margin-top: 50px;
+  letter-spacing: 1px;
+}
+
+/* ─────────────── PRINT UTILITIES ─────────────── */
+
+.page-break { page-break-before: always; }
+.no-break { page-break-inside: avoid; }
+
+@media print {
+  body { background: white; }
+  .cover { height: 297mm; }
+  .back-cover { height: 297mm; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     COVER PAGE
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div class="cover">
+  <div class="cover-top-bar"></div>
+  <div class="cover-content">
+    <div class="cover-label">Point of View White Paper</div>
+    <h1>The Agent Harness</h1>
+    <h2>Why the Orchestration Layer &mdash; Not the Model &mdash; Determines Agent Success</h2>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Author</span>
+        <span class="cover-meta-value">Shyam Sridhar</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Date</span>
+        <span class="cover-meta-value">March 2026</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Classification</span>
+        <span class="cover-meta-value">Public</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">License</span>
+        <span class="cover-meta-value">MIT</span>
+      </div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <span>AGENT-HARNESS-POV-2026</span>
+    <span>github.com/shyamsridhar123/harness</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EXECUTIVE SUMMARY
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div class="page">
+  <div class="executive-summary" style="padding: 14px 22px; margin-bottom: 8px; font-size: 9pt;">
+    <h2 style="margin-bottom: 6px; font-size: 14pt;">Executive Summary</h2>
+    <p>The AI industry is in the grip of a <strong>model attribution error.</strong> When an autonomous agent fails &mdash; hallucinating, looping, taking destructive action, or losing track of its task &mdash; the instinct is to blame the model. <em>The model needs to be smarter. The model needs more context. The model needs better alignment.</em></p>
+    <p>But across research benchmarks, open-source agent projects, and the lived experience of engineering teams building agentic systems, a different pattern emerges: <strong>the agent harness &mdash; the orchestration layer that wraps the model &mdash; is the primary determinant of whether an agent is reliable, safe, and useful.</strong></p>
+    <p>Two tools can use the same model and produce dramatically different outcomes because their harnesses differ in how they assemble context, validate tool calls, control loops, and enforce policy. The model is the reasoning engine. The harness is the operating system and control plane that makes the engine useful, safe, and repeatable.</p>
+    <p>This paper argues that engineering teams should shift investment from model selection to harness design. It defines the agent harness, decomposes its <strong>five architectural pillars,</strong> catalogs the most common failure modes, and provides architectural patterns drawn from Anthropic&rsquo;s research, Berkeley&rsquo;s work on compound AI systems, and open-source agent implementations.</p>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 1 ═══════════════════════ -->
+
+  <div class="section-header" style="margin-top: 8px; margin-bottom: 8px;">
+    <span class="section-number">Section 01</span>
+    <h1 class="section-title" style="font-size: 20pt;">The Invisible Layer</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>A language model can produce text. It cannot, by itself, read files, run tests, open pull requests, apply policy checks, or decide when to stop working. The harness is what turns model output into actions with controlled side effects.</p>
+
+  <p>Yet in most conversations about AI agents, the harness is invisible. Discussion centers on model benchmarks, parameter counts, context window sizes, and training data. The orchestration substrate &mdash; how context is assembled, how tools are executed, how loops are controlled, how policies are enforced &mdash; is treated as implementation detail.</p>
+
+  <div class="pull-quote" style="margin: 14px 0; padding: 14px 24px;">
+    <p>This is like evaluating a car engine without considering the transmission, brakes, steering, and chassis. The engine matters, but the vehicle&rsquo;s behavior depends on the entire system.</p>
+  </div>
+
+  <p>The invisibility of the harness has a concrete cost. Engineering teams spend weeks evaluating models, running evals, and fine-tuning prompts when their actual reliability problems are:</p>
+
+  <ul class="bullet-list">
+    <li>Unclear stopping rules that cause infinite loops</li>
+    <li>Weak tool validation that allows malformed calls</li>
+    <li>Poor context budgeting that fills the window with irrelevant data</li>
+    <li>Missing feedback loops that prevent self-correction</li>
+  </ul>
+
+  <p>These are harness design problems, not model capability problems.</p>
+</div>
+
+<!-- ═══════════════════════ SECTION 2 ═══════════════════════ -->
+
+<div class="page">
+  <div class="section-header">
+    <span class="section-number">Section 02</span>
+    <h1 class="section-title">Defining the Agent Harness</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>An agent harness is the runtime that constructs context, executes tool calls, enforces guardrails, and decides when each loop iteration should continue or stop.</p>
+
+  <div class="two-col">
+    <div>
+      <h3 class="minor-title">It is not:</h3>
+      <ul class="bullet-list">
+        <li>A chat UI wrapper</li>
+        <li>A prompt template library</li>
+        <li>A framework&rsquo;s decorator syntax</li>
+        <li>An API client for a language model</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="minor-title">It is:</h3>
+      <p>The execution substrate that determines whether an agent can operate safely and reliably over many steps. The distinction is architectural, not cosmetic.</p>
+    </div>
+  </div>
+
+  <span class="code-label">Architecture &mdash; The Harness in Context</span>
+  <div style="margin:18px 0 24px 0; page-break-inside:avoid; background:#080e1a; border-radius:8px; padding:24px 16px;">
+    <svg viewBox="0 0 520 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+      <defs>
+        <linearGradient id="harnessGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a2744" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="#0d1525" stop-opacity="0.98"/>
+        </linearGradient>
+        <linearGradient id="glassGreen" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#4a9060" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#2d6a4f" stop-opacity="0.06"/>
+        </linearGradient>
+        <linearGradient id="glassAmber" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#C8973E" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#8a6520" stop-opacity="0.06"/>
+        </linearGradient>
+        <linearGradient id="glassBlue" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2B5EA7" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#1a3a6a" stop-opacity="0.06"/>
+        </linearGradient>
+        <linearGradient id="glassRed" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#B83230" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#6e1e1d" stop-opacity="0.06"/>
+        </linearGradient>
+        <linearGradient id="borderGlow" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#C8973E" stop-opacity="0.6"/>
+          <stop offset="50%" stop-color="#2B5EA7" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#C8973E" stop-opacity="0.6"/>
+        </linearGradient>
+        <filter id="glowGold" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feFlood flood-color="#C8973E" flood-opacity="0.3" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glowSoft" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feFlood flood-color="#ffffff" flood-opacity="0.06" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <marker id="arrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 8 5 L 0 9" fill="none" stroke="#C8973E" stroke-width="1.5" stroke-linejoin="round"/></marker>
+        <marker id="arrowGSm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 1 L 8 5 L 0 9" fill="none" stroke="#C8973E" stroke-width="1.5" stroke-linejoin="round"/></marker>
+      </defs>
+      <!-- Input pill -->
+      <rect x="190" y="6" width="140" height="32" rx="16" fill="#0f1b33" stroke="rgba(200,151,62,0.25)" stroke-width="1"/>
+      <text x="260" y="27" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#e8ecf0">User Task</text>
+      <line x1="260" y1="38" x2="260" y2="56" stroke="#C8973E" stroke-width="1.5" marker-end="url(#arrowG)"/>
+      <!-- Outer harness glass panel -->
+      <rect x="30" y="56" width="460" height="358" rx="12" fill="url(#harnessGrad)" stroke="url(#borderGlow)" stroke-width="1"/>
+      <!-- Subtle inner glow line at top -->
+      <line x1="42" y1="57" x2="478" y2="57" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <text x="260" y="78" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" letter-spacing="3" fill="#C8973E" opacity="0.8">AGENT HARNESS</text>
+      <!-- Context Builder glass card -->
+      <rect x="60" y="90" width="400" height="60" rx="8" fill="url(#glassGreen)" stroke="rgba(74,144,96,0.3)" stroke-width="1"/>
+      <circle cx="80" cy="110" r="4" fill="#4a9060" opacity="0.6"/>
+      <text x="92" y="113" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#7bc892">Context Builder</text>
+      <text x="80" y="130" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">system prompt + harness instructions + AGENTS.md + tool definitions</text>
+      <line x1="260" y1="150" x2="260" y2="170" stroke="#C8973E" stroke-width="1.5" marker-end="url(#arrowG)"/>
+      <!-- Language Model glass card (highlighted) -->
+      <rect x="60" y="170" width="400" height="52" rx="8" fill="url(#glassAmber)" stroke="rgba(200,151,62,0.4)" stroke-width="1" filter="url(#glowGold)"/>
+      <circle cx="80" cy="190" r="4" fill="#C8973E" opacity="0.7"/>
+      <text x="92" y="193" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#e8c97a">Language Model</text>
+      <text x="92" y="208" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(232,201,122,0.6)">(reasoning engine)</text>
+      <line x1="260" y1="222" x2="260" y2="242" stroke="#C8973E" stroke-width="1.5" marker-end="url(#arrowG)"/>
+      <!-- Decision Router glass card -->
+      <rect x="60" y="242" width="400" height="60" rx="8" fill="url(#glassBlue)" stroke="rgba(43,94,167,0.3)" stroke-width="1"/>
+      <circle cx="80" cy="262" r="4" fill="#2B5EA7" opacity="0.6"/>
+      <text x="92" y="265" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#6a9bcc">Decision Router</text>
+      <text x="80" y="282" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">tool call → Tool Runner + Validators</text>
+      <text x="310" y="282" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">final answer → Output</text>
+      <line x1="260" y1="302" x2="260" y2="322" stroke="#C8973E" stroke-width="1.5" marker-end="url(#arrowG)"/>
+      <!-- Policy Gate glass card -->
+      <rect x="60" y="322" width="400" height="44" rx="8" fill="url(#glassRed)" stroke="rgba(184,50,48,0.35)" stroke-width="1"/>
+      <circle cx="80" cy="344" r="4" fill="#B83230" opacity="0.6"/>
+      <text x="92" y="348" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#e06060">Policy + Permission Checks</text>
+      <!-- Feedback loop — clean internal right-side return -->
+      <path d="M 450 344 C 470 344 480 330 480 310 L 480 130 C 480 110 470 100 450 100" stroke="rgba(200,151,62,0.3)" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arrowGSm)"/>
+      <text x="488" y="220" font-family="IBM Plex Mono, monospace" font-size="5.5" fill="rgba(200,151,62,0.4)" transform="rotate(90,488,220)" text-anchor="middle" letter-spacing="1">FEEDBACK</text>
+      <!-- Exit arrow -->
+      <line x1="260" y1="366" x2="260" y2="394" stroke="#C8973E" stroke-width="1.5" marker-end="url(#arrowG)"/>
+      <!-- Harness boundary label -->
+      <line x1="30" y1="420" x2="490" y2="420" stroke="rgba(42,58,82,0.4)" stroke-width="0.5" stroke-dasharray="4 3"/>
+      <text x="260" y="434" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6" fill="rgba(113,128,150,0.5)" letter-spacing="2">HARNESS BOUNDARY</text>
+      <!-- Output pill -->
+      <rect x="190" y="448" width="140" height="32" rx="16" fill="#0f1b33" stroke="rgba(200,151,62,0.25)" stroke-width="1"/>
+      <text x="260" y="469" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#e8ecf0">Output</text>
+      <text x="260" y="496" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7" fill="rgba(113,128,150,0.6)">action executed or response delivered</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SECTION 3 ═══════════════════════ -->
+
+<div class="page">
+  <div class="section-header">
+    <span class="section-number">Section 03</span>
+    <h1 class="section-title">The Five Pillars of a Production Harness</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>A production-grade agent harness stands on five pillars. Remove any one and the system collapses &mdash; not eventually, but within the first multi-step task. Each pillar enforces a specific architectural guarantee, has a measurable implementation contract, and produces a known failure signature when absent.</p>
+
+  <!-- Pillar 1 -->
+  <div class="pillar-card p1">
+    <span class="pillar-tag">Pillar 01</span>
+    <h3>Context Assembly</h3>
+    <p class="guarantee"><strong>Guarantee:</strong> Every model invocation receives a token payload that maximizes comprehension per token spent &mdash; system prompt, harness instructions, project context, tool definitions, and dynamic state &mdash; structured so the model knows what exists, what it can do, and what the user expects.</p>
+    <p>This is not &ldquo;write a system prompt.&rdquo; This is an allocation problem. A 200K-token context window is a fixed resource budget. Every byte of irrelevant context displaces relevant context.</p>
+
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Content</th><th>Injection Point</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Static foundation</strong></td><td>Role identity, safety rules, output format constraints</td><td>System prompt, set once</td></tr>
+        <tr><td><strong>Project context</strong></td><td>Code conventions, architecture doc, dependency map</td><td>Loaded from AGENTS.md at session start</td></tr>
+        <tr><td><strong>Dynamic state</strong></td><td>Current file tree, git status, in-progress task state</td><td>Injected per turn by the harness</td></tr>
+        <tr><td><strong>Tool definitions</strong></td><td>Name, description, parameter schema, usage examples</td><td>Registered at harness initialization</td></tr>
+        <tr><td><strong>User message</strong></td><td>The actual task or follow-up</td><td>Appended last (queries at bottom improve quality up to 30%)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="failure-sig">
+      <span class="fail-label">Failure Signature</span>
+      <p><strong>Context starvation.</strong> The model doesn&rsquo;t know what resources exist, what tools are available, or what vocabulary the user expects. The model isn&rsquo;t confused &mdash; it&rsquo;s uninformed.</p>
+    </div>
+  </div>
+
+  <!-- Pillar 2 -->
+  <div class="pillar-card p2">
+    <span class="pillar-tag">Pillar 02</span>
+    <h3>Tool Integrity (The Agent-Computer Interface)</h3>
+    <p class="guarantee"><strong>Guarantee:</strong> Every tool call is schema-validated before execution, runs in a controlled environment, returns output the model can reason about, and produces actionable error messages that enable self-correction.</p>
+
+    <div class="pull-quote" style="margin-top: 12px;">
+      <p>&ldquo;Anthropic spent more time optimizing tools than the overall prompt.&rdquo;</p>
+      <span class="attribution">&mdash; Anthropic SWE-bench Team</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Format</th><th>Model Cost</th><th>When to Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Full file content</td><td>High token count, unambiguous</td><td>File reads under 500 lines</td></tr>
+        <tr><td>Diffs</td><td>Error-prone for model tracking</td><td>Avoid as model output; acceptable as harness display</td></tr>
+        <tr><td>Structured JSON</td><td>Escaping burns tokens</td><td>API responses, structured data</td></tr>
+        <tr><td>Plain text summary</td><td>Low token count, high comprehension</td><td>Verbose tool results</td></tr>
+      </tbody>
+    </table>
+
+    <div class="failure-sig">
+      <span class="fail-label">Failure Signature</span>
+      <p><strong>Tool misuse.</strong> The model calls tools with wrong parameter types, nonsensical argument combinations, or in illogical sequences. Root cause: ambiguous tool definitions, not model capability.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <!-- Pillar 3 -->
+  <div class="pillar-card p3">
+    <span class="pillar-tag">Pillar 03</span>
+    <h3>Loop Discipline</h3>
+    <p class="guarantee"><strong>Guarantee:</strong> The agent&rsquo;s execution cycle uses explicit signals &mdash; not heuristics &mdash; to determine when to continue, retry, or halt.</p>
+
+    <span class="code-label">The ToolResult Contract</span>
+    <div style="margin:18px 0 24px 0; page-break-inside:avoid; background:#080e1a; border-radius:8px; padding:20px 16px;">
+      <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+        <defs>
+          <linearGradient id="trcHeadGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1a2744"/>
+            <stop offset="100%" stop-color="#243B5E"/>
+          </linearGradient>
+          <filter id="rowGlow" x="-2%" y="-10%" width="104%" height="120%">
+            <feGaussianBlur stdDeviation="1" result="blur"/>
+            <feFlood flood-color="#ffffff" flood-opacity="0.02" result="c"/>
+            <feComposite in="c" in2="blur" operator="in" result="g"/>
+            <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Header row -->
+        <rect x="0" y="0" width="520" height="36" rx="8" fill="url(#trcHeadGrad)"/>
+        <rect x="0" y="20" width="520" height="16" fill="url(#trcHeadGrad)"/>
+        <text x="60" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">success</text>
+        <text x="178" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">shouldContinue</text>
+        <text x="385" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">Meaning</text>
+        <!-- Row 1 -->
+        <rect x="2" y="38" width="516" height="38" rx="6" fill="rgba(15,27,51,0.8)" filter="url(#rowGlow)"/>
+        <rect x="38" y="52" width="44" height="16" rx="8" fill="rgba(74,144,96,0.15)"/>
+        <text x="60" y="64" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#7bc892">true</text>
+        <rect x="156" y="52" width="44" height="16" rx="8" fill="rgba(74,144,96,0.15)"/>
+        <text x="178" y="64" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#7bc892">true</text>
+        <text x="385" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.8)">Tool worked. Keep pursuing the goal.</text>
+        <!-- Row 2 -->
+        <rect x="2" y="78" width="516" height="38" rx="6" fill="rgba(20,30,48,0.6)"/>
+        <rect x="38" y="92" width="44" height="16" rx="8" fill="rgba(74,144,96,0.15)"/>
+        <text x="60" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#7bc892">true</text>
+        <rect x="152" y="92" width="52" height="16" rx="8" fill="rgba(184,50,48,0.15)"/>
+        <text x="178" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#e06060">false</text>
+        <text x="385" y="102" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.8)">Task complete. Stop the loop.</text>
+        <!-- Row 3 -->
+        <rect x="2" y="118" width="516" height="38" rx="6" fill="rgba(15,27,51,0.8)" filter="url(#rowGlow)"/>
+        <rect x="34" y="132" width="52" height="16" rx="8" fill="rgba(184,50,48,0.15)"/>
+        <text x="60" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#e06060">false</text>
+        <rect x="156" y="132" width="44" height="16" rx="8" fill="rgba(74,144,96,0.15)"/>
+        <text x="178" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#7bc892">true</text>
+        <text x="385" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.8)">Tool failed. Try another approach.</text>
+        <!-- Row 4 -->
+        <rect x="2" y="158" width="516" height="38" rx="6" fill="rgba(20,30,48,0.6)"/>
+        <rect x="34" y="172" width="52" height="16" rx="8" fill="rgba(184,50,48,0.15)"/>
+        <text x="60" y="184" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#e06060">false</text>
+        <rect x="152" y="172" width="52" height="16" rx="8" fill="rgba(184,50,48,0.15)"/>
+        <text x="178" y="184" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#e06060">false</text>
+        <text x="385" y="182" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.8)">Unrecoverable. Halt immediately.</text>
+        <!-- Subtle divider lines -->
+        <line x1="122" y1="36" x2="122" y2="196" stroke="rgba(42,58,82,0.3)" stroke-width="0.5"/>
+        <line x1="240" y1="36" x2="240" y2="196" stroke="rgba(42,58,82,0.3)" stroke-width="0.5"/>
+        <!-- Outer border -->
+        <rect x="0" y="0" width="520" height="196" rx="8" fill="none" stroke="rgba(42,58,82,0.4)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Stopping Condition</th><th>Trigger</th><th>Harness Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Explicit completion</strong></td><td>Model calls complete_task</td><td>Stop loop, return summary</td></tr>
+        <tr><td><strong>Iteration ceiling</strong></td><td>Turn count exceeds maxIterations</td><td>Stop loop, return partial results</td></tr>
+        <tr><td><strong>Token budget</strong></td><td>Context utilization exceeds 80%</td><td>Trigger compaction or spawn sub-agent</td></tr>
+        <tr><td><strong>Safety halt</strong></td><td>Policy violation detected</td><td>Stop immediately, log, alert</td></tr>
+        <tr><td><strong>Idle detection</strong></td><td>N turns with no tool calls</td><td>Prompt model: &ldquo;Are you blocked?&rdquo;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="failure-sig">
+      <span class="fail-label">Failure Signature</span>
+      <p><strong>The infinite loop.</strong> The agent runs for hundreds of turns because nobody told it how to stop. Both infinite loops and premature termination are harness bugs.</p>
+    </div>
+  </div>
+
+  <!-- Pillar 4 -->
+  <div class="pillar-card p4">
+    <span class="pillar-tag">Pillar 04</span>
+    <h3>Policy Enforcement</h3>
+    <p class="guarantee"><strong>Guarantee:</strong> Every tool call passes through a permission gate <em>before</em> execution &mdash; classified as allow, deny, or confirm &mdash; so that no side effect occurs without matching the harness&rsquo;s policy matrix.</p>
+
+    <span class="code-label">The Permission Matrix</span>
+    <div style="margin:18px 0 24px 0; page-break-inside:avoid; background:#080e1a; border-radius:8px; padding:20px 16px;">
+      <svg viewBox="0 0 520 274" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+        <defs>
+          <linearGradient id="pmHeadGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1a2744"/>
+            <stop offset="100%" stop-color="#243B5E"/>
+          </linearGradient>
+        </defs>
+        <!-- Header -->
+        <rect x="0" y="0" width="520" height="36" rx="8" fill="url(#pmHeadGrad)"/>
+        <rect x="0" y="20" width="520" height="16" fill="url(#pmHeadGrad)"/>
+        <text x="85" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">Action Category</text>
+        <text x="222" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">Policy</text>
+        <text x="395" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="1">Examples</text>
+        <!-- Row 1 -->
+        <rect x="2" y="38" width="516" height="38" rx="6" fill="rgba(15,27,51,0.8)"/>
+        <text x="85" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">Read-only</text>
+        <rect x="196" y="52" width="52" height="16" rx="8" fill="rgba(74,144,96,0.18)"/>
+        <text x="222" y="64" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#7bc892">ALLOW</text>
+        <text x="395" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">read_file, list_dir, git status</text>
+        <!-- Row 2 -->
+        <rect x="2" y="78" width="516" height="38" rx="6" fill="rgba(20,30,48,0.6)"/>
+        <text x="85" y="102" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">Scoped write</text>
+        <rect x="196" y="92" width="52" height="16" rx="8" fill="rgba(74,144,96,0.18)"/>
+        <text x="222" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#7bc892">ALLOW</text>
+        <text x="395" y="102" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">write to output/, working branch</text>
+        <!-- Row 3 -->
+        <rect x="2" y="118" width="516" height="38" rx="6" fill="rgba(15,27,51,0.8)"/>
+        <text x="85" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">Modifying source</text>
+        <rect x="190" y="132" width="64" height="16" rx="8" fill="rgba(200,151,62,0.18)"/>
+        <text x="222" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#e8c97a">CONFIRM</text>
+        <text x="395" y="142" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">edit src/*, modify package.json</text>
+        <!-- Row 4 -->
+        <rect x="2" y="158" width="516" height="38" rx="6" fill="rgba(20,30,48,0.6)"/>
+        <text x="85" y="182" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">Destructive</text>
+        <rect x="190" y="172" width="64" height="16" rx="8" fill="rgba(200,151,62,0.18)"/>
+        <text x="222" y="184" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#e8c97a">CONFIRM</text>
+        <text x="395" y="182" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">git push --force, rm -rf, DROP</text>
+        <!-- Row 5 -->
+        <rect x="2" y="198" width="516" height="38" rx="6" fill="rgba(15,27,51,0.8)"/>
+        <text x="85" y="222" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">External-facing</text>
+        <rect x="190" y="212" width="64" height="16" rx="8" fill="rgba(200,151,62,0.18)"/>
+        <text x="222" y="224" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#e8c97a">CONFIRM</text>
+        <text x="395" y="222" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">Post to Slack, deploy to prod</text>
+        <!-- Row 6 -->
+        <rect x="2" y="238" width="516" height="34" rx="6" fill="rgba(20,30,48,0.6)"/>
+        <text x="85" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#e8ecf0">Credential access</text>
+        <rect x="198" y="250" width="48" height="16" rx="8" fill="rgba(184,50,48,0.2)"/>
+        <text x="222" y="262" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" font-weight="600" fill="#e06060">DENY</text>
+        <text x="395" y="260" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="rgba(168,200,232,0.7)">Read .env, access secrets mgr</text>
+        <!-- Dividers -->
+        <line x1="165" y1="36" x2="165" y2="272" stroke="rgba(42,58,82,0.25)" stroke-width="0.5"/>
+        <line x1="278" y1="36" x2="278" y2="272" stroke="rgba(42,58,82,0.25)" stroke-width="0.5"/>
+        <!-- Border -->
+        <rect x="0" y="0" width="520" height="272" rx="8" fill="none" stroke="rgba(42,58,82,0.4)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <div class="failure-sig">
+      <span class="fail-label">Failure Signature</span>
+      <p><strong>Destructive actions.</strong> The agent deletes files, force-pushes to main, or posts to production channels. The instinct is to blame judgement. The actual cause: nobody built the gate.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <!-- Pillar 5 -->
+  <div class="pillar-card p5">
+    <span class="pillar-tag">Pillar 05</span>
+    <h3>Context Lifecycle</h3>
+    <p class="guarantee"><strong>Guarantee:</strong> The context window is actively managed as a finite, depletable resource &mdash; with explicit rules for what stays hot, what gets compacted, what gets persisted to disk, and when work is offloaded to sub-agents.</p>
+
+    <span class="code-label">Three-Tier Memory Architecture</span>
+    <div style="margin:18px 0 24px 0; page-break-inside:avoid; background:#080e1a; border-radius:8px; padding:20px 16px;">
+      <svg viewBox="0 0 480 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+        <defs>
+          <linearGradient id="hotG2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#B83230" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#C8973E" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="warmG2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#C8973E" stop-opacity="0.1"/>
+            <stop offset="100%" stop-color="#2B5EA7" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="coldG2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#6B4C9A" stop-opacity="0.1"/>
+            <stop offset="100%" stop-color="#2B5EA7" stop-opacity="0.05"/>
+          </linearGradient>
+          <filter id="tierGlow" x="-3%" y="-5%" width="106%" height="115%">
+            <feGaussianBlur stdDeviation="3" result="b"/>
+            <feFlood flood-color="#ffffff" flood-opacity="0.03" result="c"/>
+            <feComposite in="c" in2="b" operator="in" result="g"/>
+            <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Tier 1: HOT -->
+        <rect x="2" y="2" width="476" height="82" rx="10" fill="rgba(15,27,51,0.9)" stroke="rgba(184,50,48,0.35)" stroke-width="1" filter="url(#tierGlow)"/>
+        <rect x="2" y="2" width="476" height="82" rx="10" fill="url(#hotG2)"/>
+        <!-- Accent dot -->
+        <circle cx="22" cy="20" r="5" fill="#B83230" opacity="0.7"/>
+        <circle cx="22" cy="20" r="2.5" fill="#e06060"/>
+        <text x="36" y="24" font-family="IBM Plex Mono, monospace" font-size="7" font-weight="600" letter-spacing="2" fill="#e06060">TIER 1</text>
+        <text x="22" y="42" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#e8ecf0">HOT — In the context window</text>
+        <text x="22" y="58" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">System prompt, current task, recent tool results,</text>
+        <text x="22" y="72" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">active conversation. Always present.</text>
+        <!-- Connector -->
+        <line x1="240" y1="84" x2="240" y2="98" stroke="rgba(200,151,62,0.3)" stroke-width="1" stroke-dasharray="3 2"/>
+        <circle cx="240" cy="96" r="2" fill="#C8973E" opacity="0.5"/>
+        <!-- Tier 2: WARM -->
+        <rect x="2" y="100" width="476" height="82" rx="10" fill="rgba(15,27,51,0.9)" stroke="rgba(200,151,62,0.3)" stroke-width="1" filter="url(#tierGlow)"/>
+        <rect x="2" y="100" width="476" height="82" rx="10" fill="url(#warmG2)"/>
+        <circle cx="22" cy="118" r="5" fill="#C8973E" opacity="0.7"/>
+        <circle cx="22" cy="118" r="2.5" fill="#e8c97a"/>
+        <text x="36" y="122" font-family="IBM Plex Mono, monospace" font-size="7" font-weight="600" letter-spacing="2" fill="#e8c97a">TIER 2</text>
+        <text x="22" y="140" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#e8ecf0">WARM — Summarized in context</text>
+        <text x="22" y="156" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">Older conversation turns compressed to key decisions</text>
+        <text x="22" y="170" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">and outcomes. Harness manages compaction.</text>
+        <!-- Connector -->
+        <line x1="240" y1="182" x2="240" y2="196" stroke="rgba(107,76,154,0.3)" stroke-width="1" stroke-dasharray="3 2"/>
+        <circle cx="240" cy="194" r="2" fill="#6B4C9A" opacity="0.5"/>
+        <!-- Tier 3: COLD -->
+        <rect x="2" y="198" width="476" height="82" rx="10" fill="rgba(15,27,51,0.9)" stroke="rgba(107,76,154,0.3)" stroke-width="1" filter="url(#tierGlow)"/>
+        <rect x="2" y="198" width="476" height="82" rx="10" fill="url(#coldG2)"/>
+        <circle cx="22" cy="216" r="5" fill="#6B4C9A" opacity="0.7"/>
+        <circle cx="22" cy="216" r="2.5" fill="#a08cc8"/>
+        <text x="36" y="220" font-family="IBM Plex Mono, monospace" font-size="7" font-weight="600" letter-spacing="2" fill="#a08cc8">TIER 3</text>
+        <text x="22" y="238" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#e8ecf0">COLD — Persisted to disk</text>
+        <text x="22" y="254" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">Full file contents, verbose logs, research findings.</text>
+        <text x="22" y="268" font-family="Inter, sans-serif" font-size="8.5" fill="rgba(168,200,232,0.75)">Accessible via tool calls but not consuming tokens.</text>
+      </svg>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Mechanism</th><th>What It Does</th><th>When to Trigger</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Compaction</strong></td><td>Summarize older messages, drop verbose results</td><td>Context utilization exceeds 80%</td></tr>
+        <tr><td><strong>Progress file</strong></td><td>Agent writes progress.md with current state</td><td>Every 5 turns, before compaction</td></tr>
+        <tr><td><strong>Sub-agent delegation</strong></td><td>Spawn sub-agent with own context window</td><td>Subtask would consume &gt;20% of remaining context</td></tr>
+        <tr><td><strong>context.md pattern</strong></td><td>Persistent file read at session start</td><td>Multi-session tasks</td></tr>
+      </tbody>
+    </table>
+
+    <div class="failure-sig">
+      <span class="fail-label">Failure Signature</span>
+      <p><strong>Context exhaustion.</strong> The agent starts producing incoherent responses or losing track of its objective around turn 15. The diagnosis is &ldquo;the model forgot&rdquo; &mdash; the actual cause is that the harness let critical information get displaced by noise.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SECTION 4 ═══════════════════════ -->
+
+<div class="page">
+  <div class="section-header">
+    <span class="section-number">Section 04</span>
+    <h1 class="section-title">The Attribution Error</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>The most consequential insight from studying agent failures is that <strong>most reliability problems blamed on &ldquo;the model&rdquo; are harness design problems.</strong></p>
+
+  <table>
+    <thead>
+      <tr><th>Symptom</th><th>Misattribution</th><th>Actual Cause</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Infinite loops</strong></td><td>&ldquo;Model can&rsquo;t figure out when to stop&rdquo;</td><td>No explicit completion mechanism in the harness</td></tr>
+      <tr><td><strong>Context exhaustion</strong></td><td>&ldquo;Context window isn&rsquo;t big enough&rdquo;</td><td>Harness dumps full outputs without summarization</td></tr>
+      <tr><td><strong>Destructive actions</strong></td><td>&ldquo;Model doesn&rsquo;t understand consequences&rdquo;</td><td>No policy layer &mdash; no actions require confirmation</td></tr>
+      <tr><td><strong>Tool misuse</strong></td><td>&ldquo;Model doesn&rsquo;t understand the tools&rdquo;</td><td>Vague tool descriptions, ambiguous parameters</td></tr>
+      <tr><td><strong>No self-correction</strong></td><td>&ldquo;Model can&rsquo;t recognize mistakes&rdquo;</td><td>Harness doesn&rsquo;t feed actionable errors back into the loop</td></tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box">
+    <span class="insight-label">Key Insight</span>
+    <p>Each failure mode above shares a common structure: a model behavior that <em>looks like</em> a capability gap but is actually caused by missing harness infrastructure. Fixing the harness &mdash; not switching models &mdash; resolves the problem.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SECTION 5 ═══════════════════════ -->
+
+<div class="page">
+  <div class="section-header" style="margin-top:0;margin-bottom:16px;">
+    <span class="section-number">Section 05</span>
+    <h1 class="section-title">Harness Patterns for Production</h1>
+    <hr class="section-rule">
+  </div>
+
+  <h2 class="subsection-title" style="margin-top:16px;">The Augmented LLM as Foundation</h2>
+
+  <p>Every agentic system starts with an LLM enhanced with three capabilities: retrieval, tools, and memory. These capabilities are harness-level additions. The model itself doesn&rsquo;t &ldquo;have&rdquo; tools &mdash; the harness gives it tools, validates their use, and executes their results.</p>
+
+  <h2 class="subsection-title">Workflow Patterns (Deterministic Control Flow)</h2>
+
+  <table>
+    <thead><tr><th>Pattern</th><th>Harness Responsibility</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Prompt Chaining</strong></td><td>Manages sequential model calls, validates intermediate results</td><td>Tasks with known subtasks</td></tr>
+      <tr><td><strong>Routing</strong></td><td>Classifies inputs, directs to specialized handlers</td><td>Distinct input categories</td></tr>
+      <tr><td><strong>Parallelization</strong></td><td>Runs concurrent model calls, aggregates results</td><td>Independent subtasks</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="subsection-title">Agent Patterns (Model-Driven Control Flow)</h2>
+
+  <table>
+    <thead><tr><th>Pattern</th><th>Harness Responsibility</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Orchestrator-Workers</strong></td><td>Central model decomposes task; harness spawns workers</td><td>Complex tasks with unpredictable subtasks</td></tr>
+      <tr><td><strong>Evaluator-Optimizer</strong></td><td>One model generates; another evaluates; harness loops</td><td>Tasks with clear evaluation criteria</td></tr>
+      <tr><td><strong>Autonomous Loop</strong></td><td>Harness runs model in a loop with full tool access</td><td>Open-ended problems</td></tr>
+    </tbody>
+  </table>
+
+  <div class="pull-quote" style="margin:12px 0;padding:12px 22px;">
+    <p>&ldquo;Despite handling sophisticated tasks, agents are typically just LLMs using tools based on environmental feedback in a loop.&rdquo;</p>
+    <span class="attribution">&mdash; Anthropic, &ldquo;Building Effective Agents&rdquo;</span>
+  </div>
+
+  <h2 class="subsection-title" style="margin-top:16px;">The Unified Orchestrator Pattern</h2>
+
+  <p>One execution engine, many agent types. All agents use the same harness with different configurations: different tools, different system prompts, different model tiers, different iteration limits. This separates the pillars cleanly: the harness handles execution mechanics; the configuration handles agent identity.</p>
+</div>
+
+<!-- ═══════════════════════ SECTION 6 ═══════════════════════ -->
+
+<div class="page">
+  <div class="section-header">
+    <span class="section-number">Section 06</span>
+    <h1 class="section-title">Compound Harnesses: Multi-Agent Orchestration</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>When a system goes from one agent to many, the importance of harness design increases nonlinearly. Each sub-agent needs its own context assembly, loop discipline, and policy boundary.</p>
+
+  <table>
+    <thead>
+      <tr><th>Single-Agent Pillar</th><th>Compound Equivalent</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Context assembly</td><td>Per-agent context scoping + shared workspace</td></tr>
+      <tr><td>Tool integrity</td><td>Cross-agent tool access controls</td></tr>
+      <tr><td>Loop discipline</td><td>Dependency-aware scheduling across agents</td></tr>
+      <tr><td>Policy enforcement</td><td>Hierarchical permission boundaries</td></tr>
+      <tr><td>Context lifecycle</td><td>Shared state management across instances</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="subsection-title">Swarm Orchestration Primitives</h2>
+
+  <ul class="bullet-list">
+    <li><strong>Teams:</strong> Named groups of agents with a leader and teammates. The harness manages team membership, message routing, and shutdown coordination.</li>
+    <li><strong>Inboxes:</strong> Asynchronous message channels between agents. The harness serializes and deserializes messages, handles delivery, and prevents deadlocks.</li>
+    <li><strong>Task Dependencies:</strong> Some agent tasks depend on outputs from others. The harness resolves dependencies, schedules execution order, and propagates failures.</li>
+    <li><strong>Spawn Backends:</strong> Sub-agents can run in-process, in separate terminal panes, or on remote machines. The harness abstracts the spawn mechanism.</li>
+  </ul>
+
+  <h2 class="subsection-title">Resource Allocation</h2>
+
+  <p>A non-obvious harness responsibility: how to distribute budget (latency, cost, compute) across components. If the total budget is 100ms, should the retriever get 20ms and the model 80ms, or the reverse? Should the orchestrator use the powerful model tier while workers use the fast tier? These are harness-level decisions with first-order impact on system behavior.</p>
+
+<!-- ═══════════════════════ SECTION 7 ═══════════════════════ -->
+
+  <div class="section-header" style="margin-top:36px;">
+    <span class="section-number">Section 07</span>
+    <h1 class="section-title">Design Principles</h1>
+    <hr class="section-rule">
+  </div>
+
+  <ol class="actions-list">
+    <li><strong>Simplicity Over Sophistication.</strong> Start with the simplest harness that enforces the five pillars. Add complexity only when measurement proves it improves outcomes. A harness that clearly implements the five pillars in readable, debuggable code beats an abstraction-heavy framework every time.</li>
+    <li><strong>Transparency Over Opacity.</strong> Surface the agent&rsquo;s state at every point in its loop: which tools are being called, what context is being assembled, what policies are being applied, where in the loop the agent currently is.</li>
+    <li><strong>ACI-Native Tool Design.</strong> Treat tool design with the same rigor as UX design. Clear descriptions. Obvious parameter names. Documented edge cases. Error messages that enable self-correction.</li>
+    <li><strong>Explicit Over Heuristic.</strong> Prefer explicit signals over heuristic detection at every harness decision point. Explicit completion tools over inferred stopping. Explicit permission checks over assumed safety.</li>
+    <li><strong>Feedback Loops Over One-Shot Execution.</strong> The value of an agent is not one perfect model response. It is a controlled loop that can self-correct with runtime feedback.</li>
+    <li><strong>Atomic Tools, Compound Behavior.</strong> Tools should be primitive capabilities: read a file, write a file, run a command. Features are outcomes the agent achieves by composing primitives in a loop.</li>
+  </ol>
+
+<!-- ═══════════════════════ SECTION 8 ═══════════════════════ -->
+
+  <div class="section-header" style="margin-top:36px;">
+    <span class="section-number">Section 08</span>
+    <h1 class="section-title">From Theory to Implementation</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>This paper did not start as theory. It grew out of building agentic systems &mdash; knowledge graph pipelines that hallucinated temporal relationships, LLM defense systems where prompt injection revealed how little the harness was doing to protect the model, and the iterative process of designing orchestration layers that actually work.</p>
+
+  <p>Sharkbait &mdash; an open-source CLI coding assistant built on Bun and TypeScript &mdash; became the project where these lessons converged into a deliberate harness architecture. It is not presented here as an exemplary system but as an honest implementation of the five pillars.</p>
+
+  <h2 class="subsection-title">Pillar Mapping: How the Five Guarantees Manifest in Code</h2>
+
+  <p><strong>Context Assembly.</strong> Sharkbait&rsquo;s ContextManager separates context into two categories: PreservedContext (system prompt, task ledger, recent messages, active files, error context &mdash; never compacted) and CompactableContext (older messages, tool results &mdash; eligible for summarization).</p>
+
+  <span class="code-label">TypeScript &mdash; PreservedContext Interface</span>
+  <div class="code-block">interface PreservedContext {
+  systemPrompt: string;
+  taskLedger: TaskLedger;
+  recentMessages: Message[];
+  activeFiles: FileContext[];
+  errorContext: ErrorContext[];
+}</div>
+
+  <p><strong>Loop Discipline.</strong> The AgentLoop implements a dual-ledger progress system inspired by Microsoft Research&rsquo;s Magentic-One. Rather than a single loop counter, it separates <strong>intent</strong> from <strong>execution</strong>:</p>
+
+  <div style="margin:18px 0 24px 0; page-break-inside:avoid; background:#080e1a; border-radius:8px; padding:20px 16px;">
+    <svg viewBox="0 0 500 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;margin:0 auto;">
+      <defs>
+        <linearGradient id="ledgerAmberG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#C8973E" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#0f1b33" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="ledgerBlueG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2B5EA7" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#0f1b33" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="ledgerGlow" x="-3%" y="-3%" width="106%" height="110%">
+          <feGaussianBlur stdDeviation="2" result="b"/>
+          <feFlood flood-color="#ffffff" flood-opacity="0.03" result="c"/>
+          <feComposite in="c" in2="b" operator="in" result="g"/>
+          <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- TaskLedger glass card -->
+      <rect x="2" y="2" width="235" height="184" rx="10" fill="rgba(15,27,51,0.9)" stroke="rgba(200,151,62,0.3)" stroke-width="1" filter="url(#ledgerGlow)"/>
+      <rect x="2" y="2" width="235" height="184" rx="10" fill="url(#ledgerAmberG)"/>
+      <!-- Header area -->
+      <circle cx="22" cy="22" r="5" fill="#C8973E" opacity="0.6"/>
+      <circle cx="22" cy="22" r="2.5" fill="#e8c97a"/>
+      <text x="36" y="26" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#e8c97a">TaskLedger</text>
+      <text x="120" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" font-style="italic" fill="rgba(200,151,62,0.7)">What are we trying to do?</text>
+      <line x1="20" y1="56" x2="220" y2="56" stroke="rgba(200,151,62,0.15)" stroke-width="0.5"/>
+      <!-- Items -->
+      <rect x="20" y="68" width="6" height="6" rx="1.5" fill="rgba(200,151,62,0.4)"/>
+      <text x="34" y="75" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">objective</text>
+      <rect x="20" y="88" width="6" height="6" rx="1.5" fill="rgba(200,151,62,0.4)"/>
+      <text x="34" y="95" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">facts</text>
+      <rect x="20" y="108" width="6" height="6" rx="1.5" fill="rgba(200,151,62,0.4)"/>
+      <text x="34" y="115" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">assumptions</text>
+      <rect x="20" y="128" width="6" height="6" rx="1.5" fill="rgba(200,151,62,0.4)"/>
+      <text x="34" y="135" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">plan</text>
+      <rect x="20" y="148" width="6" height="6" rx="1.5" fill="rgba(200,151,62,0.4)"/>
+      <text x="34" y="155" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">replan count</text>
+      <!-- Connector dots -->
+      <circle cx="244" cy="90" r="1.5" fill="rgba(42,58,82,0.5)"/>
+      <circle cx="250" cy="90" r="1.5" fill="rgba(42,58,82,0.4)"/>
+      <circle cx="256" cy="90" r="1.5" fill="rgba(42,58,82,0.3)"/>
+      <!-- ProgressLedger glass card -->
+      <rect x="263" y="2" width="235" height="184" rx="10" fill="rgba(15,27,51,0.9)" stroke="rgba(43,94,167,0.3)" stroke-width="1" filter="url(#ledgerGlow)"/>
+      <rect x="263" y="2" width="235" height="184" rx="10" fill="url(#ledgerBlueG)"/>
+      <circle cx="283" cy="22" r="5" fill="#2B5EA7" opacity="0.6"/>
+      <circle cx="283" cy="22" r="2.5" fill="#6a9bcc"/>
+      <text x="297" y="26" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#6a9bcc">ProgressLedger</text>
+      <text x="380" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" font-style="italic" fill="rgba(43,94,167,0.7)">How is it going?</text>
+      <line x1="280" y1="56" x2="482" y2="56" stroke="rgba(43,94,167,0.15)" stroke-width="0.5"/>
+      <rect x="280" y="68" width="6" height="6" rx="1.5" fill="rgba(43,94,167,0.4)"/>
+      <text x="294" y="75" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">current step</text>
+      <rect x="280" y="88" width="6" height="6" rx="1.5" fill="rgba(43,94,167,0.4)"/>
+      <text x="294" y="95" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">step history</text>
+      <rect x="280" y="108" width="6" height="6" rx="1.5" fill="rgba(43,94,167,0.4)"/>
+      <text x="294" y="115" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">stall count</text>
+      <rect x="280" y="128" width="6" height="6" rx="1.5" fill="rgba(43,94,167,0.4)"/>
+      <text x="294" y="135" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">last progress timestamp</text>
+      <rect x="280" y="148" width="6" height="6" rx="1.5" fill="rgba(43,94,167,0.4)"/>
+      <text x="294" y="155" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="rgba(168,200,232,0.75)">agent assignments</text>
+      <!-- Footer label -->
+      <text x="250" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6" fill="rgba(113,128,150,0.5)" letter-spacing="2">DUAL-LEDGER PROGRESS SYSTEM — INSPIRED BY MAGENTIC-ONE</text>
+    </svg>
+  </div>
+
+  <p>This separation enables a three-state progression: <strong>continue &rarr; replan &rarr; escalate</strong> &mdash; extending the whitepaper&rsquo;s two-state model.</p>
+
+  <span class="code-label">TypeScript &mdash; Lifecycle Hooks</span>
+  <div class="code-block">type HookType =
+  | "PreToolUse" | "PostToolUse"
+  | "Stop" | "OnError"
+  | "PreAgentSwitch" | "PostAgentSwitch"
+  | "OnTokenLimit" | "OnUserInput"
+  | "SessionStart" | "SessionEnd";</div>
+
+  <h2 class="subsection-title">Where the Harness Remains Incomplete</h2>
+
+  <ul class="bullet-list">
+    <li><strong>Parity discipline.</strong> The action parity audit has not been formalized for CLI workflows.</li>
+    <li><strong>Dynamic context injection</strong> of project-specific vocabulary definitions.</li>
+    <li><strong>Self-modification.</strong> Agents cannot yet modify their own prompts based on feedback &mdash; a capability that would close the improvement-over-time loop.</li>
+  </ul>
+
+  <p>These gaps are the next engineering frontier, not oversights.</p>
+
+<!-- ═══════════════════════ SECTION 9 ═══════════════════════ -->
+
+  <div class="section-header" style="margin-top:36px;">
+    <span class="section-number">Section 09</span>
+    <h1 class="section-title">Calling the Question</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>The model will improve. Next year&rsquo;s model will be meaningfully better than this year&rsquo;s. But the harness is where engineering teams can create durable competitive advantage <em>right now.</em></p>
+
+  <h2 class="subsection-title">The Investment Case</h2>
+
+  <table>
+    <thead>
+      <tr><th>Investment Area</th><th>Payoff Timeline</th><th>Durability</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Model selection</td><td>Immediate but transient</td><td>Low &mdash; next release resets the advantage</td></tr>
+      <tr><td>Prompt engineering</td><td>Near-term</td><td>Medium &mdash; prompts need updating as models change</td></tr>
+      <tr><td><strong>Harness architecture</strong></td><td><strong>Near-term to long-term</strong></td><td><strong>High &mdash; the five pillars persist regardless of model</strong></td></tr>
+      <tr><td><strong>Tool design (ACI)</strong></td><td>Near-term</td><td><strong>High &mdash; good tools work with any model</strong></td></tr>
+      <tr><td><strong>Policy framework</strong></td><td>Ongoing</td><td><strong>High &mdash; safety requirements only increase</strong></td></tr>
+      <tr><td><strong>Context lifecycle strategy</strong></td><td>Near-term</td><td><strong>High &mdash; context management remains critical</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="subsection-title">Recommended Actions</h2>
+
+  <ol class="actions-list">
+    <li><strong>Name the harness.</strong> If your team builds agents and doesn&rsquo;t have an explicit concept of &ldquo;the harness&rdquo; &mdash; with owners, design documents, and review processes &mdash; you&rsquo;re operating on implicit assumptions. Make them explicit.</li>
+    <li><strong>Audit the five pillars.</strong> For every agent in production, ask: How is context assembled? How are tools validated? How does the loop stop? What policies gate destructive actions? How is the context window managed?</li>
+    <li><strong>Invest in tool design.</strong> Anthropic spent more time optimizing tools than prompts for their benchmark agents. Most teams do the opposite. Reverse the ratio.</li>
+    <li><strong>Separate harness from configuration.</strong> Use the unified orchestrator pattern: one execution engine, many agent types.</li>
+    <li><strong>Build feedback loops, not guardrails.</strong> The goal is a loop where mistakes are detected, surfaced with enough information for self-correction, and retried &mdash; within well-defined policy boundaries.</li>
+    <li><strong>Treat harness design as a first-class engineering discipline.</strong> It is not plumbing. It is the system that determines whether your $20/hour reasoning engine produces $200/hour outcomes or $2/hour confusion.</li>
+  </ol>
+
+<!-- ═══════════════════════ CONCLUSION ═══════════════════════ -->
+
+</div>
+
+<div class="page">
+  <div class="section-header">
+    <span class="section-number">Conclusion</span>
+    <h1 class="section-title">The Most Important, Most Neglected Component</h1>
+    <hr class="section-rule">
+  </div>
+
+  <p>The agent harness is the most important and most neglected component of agentic AI systems. While the industry focuses on model capability &mdash; larger context windows, better benchmarks, more training data &mdash; the actual determinant of agent reliability in production is the orchestration substrate: how context is assembled, how tool integrity is maintained, how loop discipline is enforced, how policies gate side effects, and how the context lifecycle is managed across turns.</p>
+
+  <p>Two systems with the same model produce dramatically different outcomes when their harnesses differ. The model is necessary but not sufficient. The harness is where engineering judgment, system design, and operational rigor create durable, compounding advantage.</p>
+
+  <div class="pull-quote" style="margin-top: 10px; padding: 10px 22px;">
+    <p>The question for engineering leaders is not &ldquo;which model should we use?&rdquo;<br>It is: <strong>&ldquo;how good is our harness?&rdquo;</strong></p>
+  </div>
+
+<!-- ═══════════════════════ SOURCES ═══════════════════════ -->
+
+  <div class="section-header" style="margin-top:10px; margin-bottom:10px;">
+    <span class="section-number">References</span>
+    <h1 class="section-title">Sources and Further Reading</h1>
+    <hr class="section-rule">
+  </div>
+
+  <ol class="sources-list" style="font-size:8.5pt;">
+    <li><span class="source-num">1.</span> <strong>Anthropic.</strong> &ldquo;Building Effective Agents.&rdquo; Anthropic Research, 2024. &mdash; Agent architecture patterns, ACI design, tool optimization, deployment guidance.</li>
+    <li><span class="source-num">2.</span> <strong>Zaharia, M. et al.</strong> &ldquo;The Shift from Models to Compound AI Systems.&rdquo; Berkeley Artificial Intelligence Research (BAIR), February 2024. &mdash; Compound system architectures, optimization challenges, production considerations.</li>
+    <li><span class="source-num">3.</span> <strong>Anthropic.</strong> &ldquo;Prompting Best Practices for Claude 4.6.&rdquo; Anthropic Platform Documentation, 2026. &mdash; System prompt design, long-horizon reasoning, context management.</li>
+    <li><span class="source-num">4.</span> <strong>Anthropic.</strong> &ldquo;Agent-Native Architecture.&rdquo; Compound Engineering Plugin, 2025&ndash;2026. &mdash; Parity, granularity, composability, emergent capability, improvement-over-time principles.</li>
+    <li><span class="source-num">5.</span> <strong>Anthropic.</strong> &ldquo;Agent Execution Patterns.&rdquo; Compound Engineering Plugin, 2025&ndash;2026. &mdash; Completion signals, partial completion, context limits, unified orchestrator pattern.</li>
+    <li><span class="source-num">6.</span> <strong>Anthropic.</strong> &ldquo;Claude Code Swarm Orchestration.&rdquo; Compound Engineering Plugin, 2025&ndash;2026. &mdash; Multi-agent primitives, team coordination, spawn backends, messaging protocols.</li>
+    <li><span class="source-num">7.</span> <strong>Microsoft Research.</strong> &ldquo;Magentic-One: A Generalist Multi-Agent System for Solving Complex Tasks.&rdquo; Microsoft Research, 2024. &mdash; Dual-ledger progress tracking, orchestrator-worker architecture.</li>
+    <li><span class="source-num">8.</span> <strong>Sridhar, S.</strong> &ldquo;Sharkbait: CLI Coding Assistant.&rdquo; GitHub, 2026. &mdash; Open-source implementation of the five pillars, dual-ledger loop discipline, Beads git-native persistence.</li>
+  </ol>
+
+  <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+    <p style="font-size: 8.5pt; color: var(--text-light); font-style: italic;">This white paper was co-authored using Claude&rsquo;s compound engineering plugin for research synthesis and the brainstorming skill for argument development. The agent harness definition and pillar framework are adapted from an original concept document by the author. The case study in Section 8 draws from the author&rsquo;s open-source work on Sharkbait.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BACK COVER ═══════════════════════ -->
+
+<div class="back-cover">
+  <div class="closing-quote">
+    The question for engineering leaders is not &ldquo;which model should we use?&rdquo;
+    <br><br>
+    <span class="closing-emphasis">It is: &ldquo;how good is our harness?&rdquo;</span>
+  </div>
+  <div class="license">MIT LICENSE &middot; MARCH 2026 &middot; GITHUB.COM/SHYAMSRIDHAR123/HARNESS</div>
+</div>
+
+</body>
+</html>

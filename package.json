@@ -1,0 +1,23 @@
+{
+  "name": "newstuff",
+  "version": "1.0.0",
+  "description": "The Agent Harness — Point of View White Paper",
+  "scripts": {
+    "pdf": "node generate-pdf.js",
+    "poster": "node generate-poster-image.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shyamsridhar123/harness.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shyamsridhar123/harness/issues"
+  },
+  "homepage": "https://github.com/shyamsridhar123/harness#readme",
+  "dependencies": {
+    "puppeteer": "^24.37.5"
+  }
+}
