@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Five Pillars - Agent Harness Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0c1120; --card: #141e30; --border: #2a3a52;
+    --green: #4a9060; --navy: #2a5080; --amber: #d4943a;
+    --red: #c44040; --purple: #7a6aac;
+    --text: #e8ecf0; --text-mid: #9aa8b8; --text-dim: #5a6878;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); }
+  body { height: 100svh; overflow: hidden; display: flex; flex-direction: column; padding: 1.5svh 2vw; gap: 1svh; }
+
+  /* --- header --- */
+  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--border); padding-bottom: .6svh; flex-shrink: 0; }
+  header h1 { font-size: clamp(14px, 2svh, 22px); font-weight: 600; letter-spacing: .04em; }
+  header .sub { color: var(--amber); font-size: clamp(9px, 1.1svh, 13px); font-weight: 300; }
+  header .tagline { color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; font-size: clamp(7px, .9svh, 10px); }
+
+  /* --- flow --- */
+  .flow-wrap { flex-shrink: 0; position: relative; }
+  .flow-label { font-family: 'IBM Plex Mono', monospace; font-size: clamp(6px, .75svh, 8px); color: var(--text-dim); margin-bottom: .3svh; }
+  .flow { display: flex; align-items: center; gap: 0; justify-content: center; }
+  .flow-box { padding: .5svh .6vw; border: 1px solid var(--border); border-radius: 4px; background: var(--card); text-align: center; font-size: clamp(7px, .85svh, 9px); font-weight: 600; line-height: 1.3; min-width: 7vw; white-space: nowrap; }
+  .flow-box[data-c="green"]  { border-color: var(--green); color: var(--green); }
+  .flow-box[data-c="amber"]  { border-color: var(--amber); color: var(--amber); position: relative; }
+  .flow-box[data-c="amber"]::before { content: ''; position: absolute; inset: -8px; border-radius: 12px; background: radial-gradient(circle, rgba(212,148,58,.1), transparent 70%); z-index: -1; }
+  .flow-box[data-c="navy"]   { border-color: var(--navy); color: var(--navy); }
+  .flow-box[data-c="red"]    { border-color: var(--red); color: var(--red); }
+  .flow-box[data-c="dim"]    { color: var(--text-mid); }
+  .flow-arrow { color: var(--border); font-size: clamp(8px, 1svh, 12px); padding: 0 .3vw; }
+  .flow-tag { font-family: 'IBM Plex Mono', monospace; font-size: clamp(5px, .6svh, 7px); color: var(--text-dim); display: block; margin-bottom: 2px; font-weight: 300; }
+  .feedback { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: clamp(6px, .7svh, 8px); color: var(--amber); margin-top: .3svh; animation: pulse-feedback 3s ease-in-out infinite; }
+  @keyframes pulse-feedback { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+
+  /* --- pillars grid --- */
+  .pillars-label { font-family: 'IBM Plex Mono', monospace; font-size: clamp(7px, .8svh, 9px); color: var(--text-dim); flex-shrink: 0; }
+  .pillars { display: grid; grid-template-columns: repeat(5, 1fr); gap: .8vw; flex: 1; min-height: 0; }
+
+  .pillar { background: var(--card); border-radius: 6px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; position: relative; animation: pillar-in .6s ease-out both; }
+  .pillar:nth-child(1) { --c: var(--green);  animation-delay: .1s; }
+  .pillar:nth-child(2) { --c: var(--navy);   animation-delay: .2s; }
+  .pillar:nth-child(3) { --c: var(--amber);  animation-delay: .3s; }
+  .pillar:nth-child(4) { --c: var(--red);    animation-delay: .4s; }
+  .pillar:nth-child(5) { --c: var(--purple); animation-delay: .5s; }
+  @keyframes pillar-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .pillar-accent { height: 3px; background: var(--c); flex-shrink: 0; }
+  .pillar-head { padding: 1svh .8vw .5svh; flex-shrink: 0; }
+  .pillar-num { font-family: 'IBM Plex Mono', monospace; font-size: clamp(24px, 4.5svh, 40px); font-weight: 600; color: var(--c); opacity: .08; line-height: 1; position: absolute; top: .6svh; right: .5vw; }
+  .pillar-name { font-size: clamp(13px, 2svh, 20px); font-weight: 700; line-height: 1.15; }
+  .pillar-guarantee { font-size: clamp(10px, 1.2svh, 14px); color: var(--text-mid); line-height: 1.45; margin-top: .5svh; }
+
+  .pillar-divider { height: 1px; background: var(--c); opacity: .3; margin: 0 .6vw; flex-shrink: 0; }
+  .pillar-details { padding: .6svh .8vw; flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .pillar-details li { font-family: 'IBM Plex Mono', monospace; font-size: clamp(9px, 1.15svh, 13px); color: var(--text-mid); line-height: 1.5; list-style: none; padding-left: .6vw; position: relative; }
+  .pillar-details li::before { content: ''; position: absolute; left: 0; top: .5em; width: 4px; height: 4px; background: var(--c); }
+
+  .pillar-fail { margin-top: auto; padding: .6svh .6vw; margin: auto .4vw .5svh; border: 1px solid rgba(196,64,64,.2); border-radius: 4px; background: rgba(196,64,64,.04); flex-shrink: 0; }
+  .pillar-fail-tag { font-family: 'IBM Plex Mono', monospace; font-size: clamp(7px, .8svh, 9px); color: var(--red); font-weight: 500; }
+  .pillar-fail-name { font-size: clamp(9px, 1.1svh, 14px); font-weight: 600; color: #e06060; }
+  .pillar-fail-desc { font-size: clamp(7px, .85svh, 10px); color: var(--text-dim); font-weight: 300; }
+
+  /* --- attribution --- */
+  .attr { flex-shrink: 0; display: grid; grid-template-columns: 1fr auto 1fr; gap: 1vw; border: 1px solid var(--navy); border-radius: 6px; padding: .6svh 1vw; background: rgba(30,58,95,.1); align-items: center; }
+  .attr-label { font-family: 'IBM Plex Mono', monospace; font-size: clamp(6px, .65svh, 8px); color: var(--text-dim); position: absolute; margin-top: -2.4svh; }
+  .attr-side h3 { font-size: clamp(10px, 1.3svh, 16px); font-weight: 600; }
+  .attr-side p { font-size: clamp(7px, .8svh, 10px); color: var(--text-dim); line-height: 1.35; }
+  .attr-blame h3 { color: var(--amber); }
+  .attr-blame .tag { color: var(--red); }
+  .attr-fix h3 { color: var(--text); }
+  .attr-fix .tag { color: var(--green); }
+  .attr .tag { font-family: 'IBM Plex Mono', monospace; font-size: clamp(6px, .6svh, 7px); font-weight: 500; }
+  .attr-arrow { font-size: clamp(14px, 1.8svh, 22px); color: var(--amber); animation: arrow-pulse 2s ease-in-out infinite; }
+  @keyframes arrow-pulse { 0%,100% { opacity: .4; transform: translateX(0); } 50% { opacity: 1; transform: translateX(3px); } }
+
+  /* --- footer --- */
+  footer { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: .4svh; }
+  footer span { font-family: 'IBM Plex Mono', monospace; font-size: clamp(7px, .75svh, 9px); color: var(--text-dim); }
+  .footer-pips { display: flex; gap: 4px; }
+  .footer-pips i { display: block; width: 10px; height: 2px; }
+
+  /* --- animated grid bg --- */
+  .bg-grid { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+  .bg-grid line { stroke: rgba(42,64,96,.06); stroke-width: .5; }
+  .bg-grid .scan { animation: scan 8s linear infinite; }
+  @keyframes scan { from { transform: translateY(-100svh); } to { transform: translateY(100svh); } }
+</style>
+</head>
+<body>
+
+<!-- animated background grid -->
+<svg class="bg-grid" width="100%" height="100%">
+  <defs><pattern id="g" width="30" height="30" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="30"/><line x1="0" y1="0" x2="30" y2="0"/></pattern></defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <rect class="scan" width="100%" height="2" fill="rgba(212,148,58,.04)"/>
+</svg>
+
+<header>
+  <div><h1>THE AGENT HARNESS</h1><span class="sub">Five Architectural Pillars for Production Agent Reliability</span></div>
+  <span class="tagline">WHY THE ORCHESTRATION LAYER &mdash; NOT THE MODEL &mdash; DETERMINES SUCCESS</span>
+</header>
+
+<div class="flow-wrap">
+  <div class="flow-label">AGENT HARNESS</div>
+  <div class="flow">
+    <div><span class="flow-tag">input</span><div class="flow-box" data-c="dim">USER TASK</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">pillar 1</span><div class="flow-box" data-c="green">CONTEXT<br>BUILDER</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">reasoning</span><div class="flow-box" data-c="amber">LANGUAGE<br>MODEL</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">evaluation</span><div class="flow-box" data-c="navy">DECISION<br>ROUTER</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">pillar 2</span><div class="flow-box" data-c="green">TOOL RUNNER<br>+ VALIDATORS</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">pillar 4</span><div class="flow-box" data-c="red">POLICY<br>GATE</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div><span class="flow-tag">result</span><div class="flow-box" data-c="dim">OUTPUT</div></div>
+  </div>
+  <div class="feedback">&larr; FEEDBACK LOOP &rarr;</div>
+</div>
+
+<div class="pillars-label">THE FIVE PILLARS OF A PRODUCTION HARNESS</div>
+<div class="pillars">
+
+  <article class="pillar">
+    <div class="pillar-accent"></div>
+    <div class="pillar-head"><span class="pillar-num">01</span><div class="pillar-name">CONTEXT<br>ASSEMBLY</div>
+      <div class="pillar-guarantee">Every model invocation receives a token payload maximizing comprehension per token.</div></div>
+    <div class="pillar-divider"></div>
+    <ul class="pillar-details">
+      <li>Static: role + safety + format</li><li>Project: AGENTS.md, conventions</li>
+      <li>Dynamic: file tree, git status</li><li>Tool defs: MCP manifests</li>
+      <li>User msg: appended last (+30%)</li>
+    </ul>
+    <div class="pillar-fail"><div class="pillar-fail-tag">FAILURE SIGNATURE</div><div class="pillar-fail-name">CONTEXT STARVATION</div><div class="pillar-fail-desc">Uninformed, not confused</div></div>
+  </article>
+
+  <article class="pillar">
+    <div class="pillar-accent"></div>
+    <div class="pillar-head"><span class="pillar-num">02</span><div class="pillar-name">TOOL<br>INTEGRITY</div>
+      <div class="pillar-guarantee">Every tool call is schema-validated before execution with actionable error messages.</div></div>
+    <div class="pillar-divider"></div>
+    <ul class="pillar-details">
+      <li>Schema validation before effects</li><li>Poka-yoke parameter design</li>
+      <li>Output format optimization</li><li>Actionable error messages</li>
+      <li>ACI: rigor of user-facing API</li>
+    </ul>
+    <div class="pillar-fail"><div class="pillar-fail-tag">FAILURE SIGNATURE</div><div class="pillar-fail-name">TOOL MISUSE</div><div class="pillar-fail-desc">Bad tools, not bad model</div></div>
+  </article>
+
+  <article class="pillar">
+    <div class="pillar-accent"></div>
+    <div class="pillar-head"><span class="pillar-num">03</span><div class="pillar-name">LOOP<br>DISCIPLINE</div>
+      <div class="pillar-guarantee">Explicit signals &mdash; not heuristics &mdash; govern continue, retry, or halt.</div></div>
+    <div class="pillar-divider"></div>
+    <ul class="pillar-details">
+      <li>ToolResult: success &times; continue</li><li>complete_task: explicit stop</li>
+      <li>Iteration ceiling (25 turns)</li><li>Token budget (80% trigger)</li>
+      <li>Idle detection + safety halt</li>
+    </ul>
+    <div class="pillar-fail"><div class="pillar-fail-tag">FAILURE SIGNATURE</div><div class="pillar-fail-name">INFINITE LOOP</div><div class="pillar-fail-desc">Nobody told it how to stop</div></div>
+  </article>
+
+  <article class="pillar">
+    <div class="pillar-accent"></div>
+    <div class="pillar-head"><span class="pillar-num">04</span><div class="pillar-name">POLICY<br>ENFORCEMENT</div>
+      <div class="pillar-guarantee">Every tool call passes through a permission gate before execution.</div></div>
+    <div class="pillar-divider"></div>
+    <ul class="pillar-details">
+      <li>Read-only: ALLOW</li><li>Scoped write: ALLOW</li>
+      <li>Modifying source: CONFIRM</li><li>Destructive/external: CONFIRM</li>
+      <li>Credential access: DENY</li>
+    </ul>
+    <div class="pillar-fail"><div class="pillar-fail-tag">FAILURE SIGNATURE</div><div class="pillar-fail-name">DESTRUCTIVE ACTIONS</div><div class="pillar-fail-desc">Nobody built the gate</div></div>
+  </article>
+
+  <article class="pillar">
+    <div class="pillar-accent"></div>
+    <div class="pillar-head"><span class="pillar-num">05</span><div class="pillar-name">CONTEXT<br>LIFECYCLE</div>
+      <div class="pillar-guarantee">Context window actively managed as a finite, depletable resource.</div></div>
+    <div class="pillar-divider"></div>
+    <ul class="pillar-details">
+      <li>HOT: prompt + recent turns</li><li>WARM: summarized older context</li>
+      <li>COLD: persisted to disk</li><li>Compaction at 80% utilization</li>
+      <li>Sub-agent delegation</li>
+    </ul>
+    <div class="pillar-fail"><div class="pillar-fail-tag">FAILURE SIGNATURE</div><div class="pillar-fail-name">CONTEXT EXHAUSTION</div><div class="pillar-fail-desc">Signal drowned by noise</div></div>
+  </article>
+
+</div>
+
+<div style="position:relative">
+  <span class="attr-label">THE ATTRIBUTION ERROR</span>
+  <div class="attr">
+    <div class="attr-side attr-blame"><span class="tag">WHAT PEOPLE BLAME</span><h3>The Model</h3><p>&ldquo;The model needs to be smarter. The model needs more context.&rdquo;</p></div>
+    <span class="attr-arrow">&rarr;</span>
+    <div class="attr-side attr-fix"><span class="tag">WHAT ACTUALLY DETERMINES RELIABILITY</span><h3>The Harness</h3><p>Same model, different harness &rarr; different outcomes.</p></div>
+  </div>
+</div>
+
+<footer>
+  <span>SRIDHAR, S. (2026) &mdash; THE AGENT HARNESS</span>
+  <div class="footer-pips">
+    <i style="background:var(--green)"></i><i style="background:var(--navy)"></i>
+    <i style="background:var(--amber)"></i><i style="background:var(--red)"></i>
+    <i style="background:var(--purple)"></i>
+  </div>
+  <span>github.com/shyamsridhar123/sharkbait</span>
+</footer>
+
+</body>
+</html>

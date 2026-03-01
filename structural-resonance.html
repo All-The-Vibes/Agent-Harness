@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Resonance — Agent Harness Generative Art</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --anthropic-dark: #141413;
+            --anthropic-light: #faf9f5;
+            --anthropic-mid-gray: #b0aea5;
+            --anthropic-light-gray: #e8e6dc;
+            --anthropic-orange: #d97757;
+            --anthropic-blue: #6a9bcc;
+            --anthropic-green: #788c5d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            min-height: 100vh;
+            color: var(--anthropic-dark);
+        }
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+        .sidebar {
+            width: 320px; flex-shrink: 0;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            padding: 24px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(20,20,19,0.1);
+            overflow-y: auto; overflow-x: hidden;
+        }
+        .sidebar h1 { font-family: 'Lora', serif; font-size: 24px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 8px; }
+        .sidebar .subtitle { color: var(--anthropic-mid-gray); font-size: 14px; margin-bottom: 32px; line-height: 1.4; }
+        .control-section { margin-bottom: 32px; }
+        .control-section h3 {
+            font-size: 16px; font-weight: 600; color: var(--anthropic-dark);
+            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        }
+        .control-section h3::before { content: '\2022'; color: var(--anthropic-orange); font-weight: bold; }
+        .seed-input {
+            width: 100%; background: var(--anthropic-light); padding: 12px; border-radius: 8px;
+            font-family: 'Courier New', monospace; font-size: 14px; margin-bottom: 12px;
+            border: 1px solid var(--anthropic-light-gray); text-align: center;
+        }
+        .seed-input:focus { outline: none; border-color: var(--anthropic-orange); box-shadow: 0 0 0 2px rgba(217,119,87,0.1); background: white; }
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .regen-button { margin-bottom: 0; }
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; font-size: 14px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 8px; }
+        .slider-container { display: flex; align-items: center; gap: 12px; }
+        .slider-container input[type="range"] { flex: 1; height: 4px; background: var(--anthropic-light-gray); border-radius: 2px; outline: none; -webkit-appearance: none; }
+        .slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--anthropic-orange); border-radius: 50%; cursor: pointer; transition: all 0.2s ease; }
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); background: #c86641; }
+        .slider-container input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: var(--anthropic-orange); border-radius: 50%; border: none; cursor: pointer; }
+        .value-display { font-family: 'Courier New', monospace; font-size: 12px; color: var(--anthropic-mid-gray); min-width: 60px; text-align: right; }
+        .button { background: var(--anthropic-orange); color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; width: 100%; }
+        .button:hover { background: #c86641; transform: translateY(-1px); }
+        .button:active { transform: translateY(0); }
+        .button.secondary { background: var(--anthropic-blue); }
+        .button.secondary:hover { background: #5a8bb8; }
+        .button.tertiary { background: var(--anthropic-green); }
+        .button.tertiary:hover { background: #6b7b52; }
+        .button-row { display: flex; gap: 8px; }
+        .button-row .button { flex: 1; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+        #canvas-container { width: 100%; max-width: 1000px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(20,20,19,0.1); background: #0c1120; }
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+        .loading { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--anthropic-mid-gray); padding: 40px; }
+        @media (max-width: 600px) { .container { flex-direction: column; } .sidebar { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Structural Resonance</h1>
+            <div class="subtitle">The five pillars of a production harness — invisible architecture made visible through particle flow. Structure determines reliability; the bright center just gets the credit.</div>
+
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="42" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">&#8592; Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next &#8594;</button>
+                </div>
+                <button class="button tertiary regen-button" onclick="randomSeedAndUpdate()">&#8635; Random</button>
+            </div>
+
+            <div class="control-section">
+                <h3>Parameters</h3>
+
+                <div class="control-group">
+                    <label>Particle Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="particleCount" min="500" max="5000" step="250" value="2000" oninput="updateParam('particleCount', this.value)">
+                        <span class="value-display" id="particleCount-value">2000</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Pillar Strength</label>
+                    <div class="slider-container">
+                        <input type="range" id="pillarStrength" min="0.2" max="3.0" step="0.1" value="1.2" oninput="updateParam('pillarStrength', this.value)">
+                        <span class="value-display" id="pillarStrength-value">1.2</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Field Radius</label>
+                    <div class="slider-container">
+                        <input type="range" id="fieldRadius" min="40" max="200" step="10" value="100" oninput="updateParam('fieldRadius', this.value)">
+                        <span class="value-display" id="fieldRadius-value">100</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Flow Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="flowSpeed" min="0.3" max="3.0" step="0.1" value="1.0" oninput="updateParam('flowSpeed', this.value)">
+                        <span class="value-display" id="flowSpeed-value">1.0</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Noise Scale</label>
+                    <div class="slider-container">
+                        <input type="range" id="noiseScale" min="0.001" max="0.015" step="0.001" value="0.004" oninput="updateParam('noiseScale', this.value)">
+                        <span class="value-display" id="noiseScale-value">0.004</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Attractor Glow</label>
+                    <div class="slider-container">
+                        <input type="range" id="attractorGlow" min="0.0" max="1.0" step="0.05" value="0.6" oninput="updateParam('attractorGlow', this.value)">
+                        <span class="value-display" id="attractorGlow-value">0.6</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Trail Opacity</label>
+                    <div class="slider-container">
+                        <input type="range" id="trailOpacity" min="5" max="40" step="1" value="15" oninput="updateParam('trailOpacity', this.value)">
+                        <span class="value-display" id="trailOpacity-value">15</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row" style="margin-bottom:8px">
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                    <button class="button secondary" onclick="downloadPNG()">Download PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">Initializing structural resonance...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // PARAMETERS
+    // ═══════════════════════════════════════════════════════════════
+
+    let params = {
+        seed: 42,
+        particleCount: 2000,
+        pillarStrength: 1.2,
+        fieldRadius: 100,
+        flowSpeed: 1.0,
+        noiseScale: 0.004,
+        attractorGlow: 0.6,
+        trailOpacity: 15,
+    };
+    let defaultParams = JSON.parse(JSON.stringify(params));
+
+    // ═══════════════════════════════════════════════════════════════
+    // PILLAR SYSTEM — THE FIVE ARCHITECTURAL GUARANTEES
+    // ═══════════════════════════════════════════════════════════════
+
+    // Pillar colors: green, blue, amber, red, violet — one per pillar
+    const PILLAR_COLORS = [
+        [74, 144, 96],    // Context Assembly — moss green
+        [106, 155, 204],  // Tool Integrity — cold blue
+        [212, 148, 58],   // Loop Discipline — warm amber
+        [196, 64, 64],    // Policy Enforcement — controlled red
+        [122, 106, 172],  // Context Lifecycle — deep violet
+    ];
+
+    const PILLAR_LABELS = [
+        'CONTEXT ASSEMBLY',
+        'TOOL INTEGRITY',
+        'LOOP DISCIPLINE',
+        'POLICY ENFORCEMENT',
+        'CONTEXT LIFECYCLE',
+    ];
+
+    let pillars = [];
+    let particles = [];
+    let attractorPos;
+    let bgGraphics;
+
+    class Pillar {
+        constructor(x, y, h, colorIdx, label) {
+            this.x = x;
+            this.y = y;
+            this.h = h;
+            this.w = 12;
+            this.colorIdx = colorIdx;
+            this.color = PILLAR_COLORS[colorIdx];
+            this.label = label;
+        }
+
+        getFieldForce(px, py) {
+            // Distance from pillar center line
+            let dx = px - this.x;
+            let dy = py - (this.y + this.h / 2);
+            let distFromLine = abs(dx);
+            let fr = params.fieldRadius;
+
+            if (distFromLine > fr || py < this.y || py > this.y + this.h) {
+                return null;
+            }
+
+            // Force: attract toward pillar center, guide downward
+            let strength = map(distFromLine, 0, fr, params.pillarStrength, 0);
+            strength = strength * strength; // Quadratic falloff
+            let fx = -dx * 0.01 * strength;
+            let fy = 0.5 * strength; // Guide downward
+            return { fx, fy, strength, colorIdx: this.colorIdx };
+        }
+
+        draw() {
+            // Pillar body — faint vertical line
+            stroke(this.color[0], this.color[1], this.color[2], 40);
+            strokeWeight(this.w);
+            line(this.x, this.y, this.x, this.y + this.h);
+
+            // Pillar field glow
+            noStroke();
+            for (let r = params.fieldRadius; r > 0; r -= 4) {
+                let alpha = map(r, 0, params.fieldRadius, 6, 0);
+                fill(this.color[0], this.color[1], this.color[2], alpha);
+                rect(this.x - r, this.y, r * 2, this.h);
+            }
+
+            // Pillar cap marks
+            stroke(this.color[0], this.color[1], this.color[2], 80);
+            strokeWeight(2);
+            line(this.x - 20, this.y, this.x + 20, this.y);
+            line(this.x - 20, this.y + this.h, this.x + 20, this.y + this.h);
+
+            // Label
+            noStroke();
+            fill(this.color[0], this.color[1], this.color[2], 50);
+            textAlign(CENTER);
+            textSize(9);
+            textFont('Courier New');
+            push();
+            translate(this.x, this.y + this.h / 2);
+            rotate(-HALF_PI);
+            text(this.label, 0, -25);
+            pop();
+        }
+    }
+
+    class FlowParticle {
+        constructor() {
+            this.reset();
+        }
+
+        reset() {
+            this.x = random(width);
+            this.y = random(-50, 0);
+            this.vx = 0;
+            this.vy = random(0.3, 1.0) * params.flowSpeed;
+            this.life = random(200, 600);
+            this.age = 0;
+            this.color = [200, 210, 220]; // Default neutral
+            this.influenced = false;
+            this.influenceStrength = 0;
+            this.trail = [];
+            this.maxTrail = 12;
+            this.baseAlpha = random(8, 25);
+        }
+
+        update() {
+            // Accumulate pillar forces
+            let totalFx = 0;
+            let totalFy = 0;
+            let maxInfluence = 0;
+            let dominantPillar = -1;
+
+            for (let p of pillars) {
+                let f = p.getFieldForce(this.x, this.y);
+                if (f) {
+                    totalFx += f.fx;
+                    totalFy += f.fy;
+                    if (f.strength > maxInfluence) {
+                        maxInfluence = f.strength;
+                        dominantPillar = f.colorIdx;
+                    }
+                }
+            }
+
+            // Attractor pull (visual only — doesn't stabilize)
+            let dax = attractorPos.x - this.x;
+            let day = attractorPos.y - this.y;
+            let daDist = sqrt(dax * dax + day * day);
+            if (daDist < 200 && daDist > 20) {
+                let aPull = map(daDist, 20, 200, 0.15, 0) * params.attractorGlow;
+                totalFx += (dax / daDist) * aPull;
+                totalFy += (day / daDist) * aPull;
+            }
+
+            // Background noise (chaos when no pillar influence)
+            let noiseInfluence = 1 - min(maxInfluence, 1);
+            let angle = noise(this.x * params.noiseScale, this.y * params.noiseScale, frameCount * 0.002) * TWO_PI * 2;
+            totalFx += cos(angle) * noiseInfluence * 0.8;
+            totalFy += sin(angle) * noiseInfluence * 0.3;
+
+            // Apply forces
+            this.vx = this.vx * 0.92 + totalFx;
+            this.vy = this.vy * 0.95 + totalFy + 0.1 * params.flowSpeed;
+
+            // Speed limit
+            let spd = sqrt(this.vx * this.vx + this.vy * this.vy);
+            if (spd > 3) { this.vx *= 3/spd; this.vy *= 3/spd; }
+
+            this.x += this.vx;
+            this.y += this.vy;
+            this.age++;
+
+            // Color blending toward dominant pillar
+            if (dominantPillar >= 0 && maxInfluence > 0.1) {
+                let pc = PILLAR_COLORS[dominantPillar];
+                let blend = min(maxInfluence * 0.08, 0.06);
+                this.color[0] = lerp(this.color[0], pc[0], blend);
+                this.color[1] = lerp(this.color[1], pc[1], blend);
+                this.color[2] = lerp(this.color[2], pc[2], blend);
+                this.influenced = true;
+                this.influenceStrength = max(this.influenceStrength, maxInfluence);
+            } else {
+                // Fade to dim when uninfluenced
+                this.color[0] = lerp(this.color[0], 60, 0.01);
+                this.color[1] = lerp(this.color[1], 70, 0.01);
+                this.color[2] = lerp(this.color[2], 80, 0.01);
+            }
+
+            // Trail
+            this.trail.push({ x: this.x, y: this.y });
+            if (this.trail.length > this.maxTrail) this.trail.shift();
+
+            // Reset conditions
+            if (this.x < -50 || this.x > width + 50 || this.y > height + 50 || this.age > this.life) {
+                this.reset();
+            }
+        }
+
+        draw() {
+            if (this.trail.length < 2) return;
+            let lifeRatio = 1 - this.age / this.life;
+            let alpha = this.baseAlpha * lifeRatio;
+            if (this.influenced) alpha *= (1 + this.influenceStrength * 0.5);
+            alpha = min(alpha, params.trailOpacity);
+
+            noFill();
+            stroke(this.color[0], this.color[1], this.color[2], alpha);
+            strokeWeight(this.influenced ? 1.2 : 0.6);
+            beginShape();
+            for (let t of this.trail) {
+                curveVertex(t.x, t.y);
+            }
+            endShape();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // P5.JS CORE
+    // ═══════════════════════════════════════════════════════════════
+
+    function setup() {
+        let canvas = createCanvas(1200, 1200);
+        canvas.parent('canvas-container');
+        document.querySelector('.loading').style.display = 'none';
+        initializeSystem();
+    }
+
+    function initializeSystem() {
+        randomSeed(params.seed);
+        noiseSeed(params.seed);
+
+        // Position five pillars evenly
+        pillars = [];
+        let margin = 140;
+        let spacing = (width - margin * 2) / 4;
+        let pillarTop = 100;
+        let pillarH = height - 200;
+
+        for (let i = 0; i < 5; i++) {
+            let px = margin + i * spacing;
+            pillars.push(new Pillar(px, pillarTop, pillarH, i, PILLAR_LABELS[i]));
+        }
+
+        // Attractor at center (the "model" — bright but structurally passive)
+        attractorPos = createVector(width / 2, height / 2);
+
+        // Create particles
+        particles = [];
+        for (let i = 0; i < params.particleCount; i++) {
+            let p = new FlowParticle();
+            p.y = random(height); // Start distributed
+            p.age = floor(random(100)); // Stagger ages
+            particles.push(p);
+        }
+
+        background(12, 17, 32);
+    }
+
+    function draw() {
+        // Semi-transparent overlay for trail accumulation
+        noStroke();
+        fill(12, 17, 32, 18);
+        rect(0, 0, width, height);
+
+        // Draw pillars (behind particles)
+        for (let p of pillars) {
+            p.draw();
+        }
+
+        // Draw attractor glow (the model — bright center)
+        drawAttractor();
+
+        // Update and draw particles
+        for (let p of particles) {
+            p.update();
+            p.draw();
+        }
+
+        // Top and bottom edges — soft gradient blending
+        drawEdgeFade();
+
+        // Corner annotations
+        drawAnnotations();
+    }
+
+    function drawAttractor() {
+        let ax = attractorPos.x;
+        let ay = attractorPos.y;
+        let glow = params.attractorGlow;
+
+        // Pulsing glow
+        let pulse = 1 + sin(frameCount * 0.02) * 0.1;
+
+        for (let r = 180 * pulse; r > 0; r -= 3) {
+            let alpha = map(r, 0, 180, 12 * glow, 0);
+            noStroke();
+            fill(212, 148, 58, alpha);
+            ellipse(ax, ay, r * 2, r * 2);
+        }
+
+        // Core
+        fill(240, 200, 120, 30 * glow);
+        ellipse(ax, ay, 20, 20);
+
+        // Label
+        fill(212, 148, 58, 40 * glow);
+        textAlign(CENTER);
+        textSize(8);
+        textFont('Courier New');
+        text('THE MODEL', ax, ay + 30);
+        textSize(7);
+        fill(212, 148, 58, 25 * glow);
+        text('(gets the credit)', ax, ay + 42);
+    }
+
+    function drawEdgeFade() {
+        // Top fade
+        for (let y = 0; y < 60; y++) {
+            let alpha = map(y, 0, 60, 255, 0);
+            stroke(12, 17, 32, alpha);
+            line(0, y, width, y);
+        }
+        // Bottom fade
+        for (let y = height - 60; y < height; y++) {
+            let alpha = map(y, height - 60, height, 0, 255);
+            stroke(12, 17, 32, alpha);
+            line(0, y, width, y);
+        }
+    }
+
+    function drawAnnotations() {
+        if (frameCount > 120 && frameCount < 130) return; // Flicker avoidance
+
+        noStroke();
+        fill(200, 210, 220, 25);
+        textFont('Courier New');
+        textSize(9);
+
+        // Top left
+        textAlign(LEFT);
+        text('STRUCTURAL RESONANCE', 30, 40);
+        fill(200, 210, 220, 15);
+        textSize(7);
+        text('seed: ' + params.seed, 30, 55);
+
+        // Bottom right
+        textAlign(RIGHT);
+        fill(200, 210, 220, 20);
+        textSize(8);
+        text('THE AGENT HARNESS', width - 30, height - 45);
+        fill(200, 210, 220, 13);
+        textSize(7);
+        text('five pillars \u00B7 sridhar 2026', width - 30, height - 30);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // UI CONTROL HANDLERS
+    // ═══════════════════════════════════════════════════════════════
+
+    function updateParam(paramName, value) {
+        params[paramName] = parseFloat(value);
+        document.getElementById(paramName + '-value').textContent = value;
+        // Some params need full reinit
+        if (paramName === 'particleCount') {
+            initializeSystem();
+        }
+    }
+
+    function updateSeedDisplay() {
+        document.getElementById('seed-input').value = params.seed;
+    }
+
+    function updateSeed() {
+        let input = document.getElementById('seed-input');
+        let newSeed = parseInt(input.value);
+        if (newSeed && newSeed > 0) {
+            params.seed = newSeed;
+            initializeSystem();
+        } else {
+            updateSeedDisplay();
+        }
+    }
+
+    function previousSeed() {
+        params.seed = Math.max(1, params.seed - 1);
+        updateSeedDisplay();
+        initializeSystem();
+    }
+
+    function nextSeed() {
+        params.seed = params.seed + 1;
+        updateSeedDisplay();
+        initializeSystem();
+    }
+
+    function randomSeedAndUpdate() {
+        params.seed = Math.floor(Math.random() * 999999) + 1;
+        updateSeedDisplay();
+        initializeSystem();
+    }
+
+    function resetParameters() {
+        params = JSON.parse(JSON.stringify(defaultParams));
+        document.getElementById('particleCount').value = params.particleCount;
+        document.getElementById('particleCount-value').textContent = params.particleCount;
+        document.getElementById('pillarStrength').value = params.pillarStrength;
+        document.getElementById('pillarStrength-value').textContent = params.pillarStrength;
+        document.getElementById('fieldRadius').value = params.fieldRadius;
+        document.getElementById('fieldRadius-value').textContent = params.fieldRadius;
+        document.getElementById('flowSpeed').value = params.flowSpeed;
+        document.getElementById('flowSpeed-value').textContent = params.flowSpeed;
+        document.getElementById('noiseScale').value = params.noiseScale;
+        document.getElementById('noiseScale-value').textContent = params.noiseScale;
+        document.getElementById('attractorGlow').value = params.attractorGlow;
+        document.getElementById('attractorGlow-value').textContent = params.attractorGlow;
+        document.getElementById('trailOpacity').value = params.trailOpacity;
+        document.getElementById('trailOpacity-value').textContent = params.trailOpacity;
+        updateSeedDisplay();
+        initializeSystem();
+    }
+
+    function downloadPNG() {
+        saveCanvas('structural-resonance-' + params.seed, 'png');
+    }
+
+    window.addEventListener('load', function() {
+        updateSeedDisplay();
+    });
+    </script>
+</body>
+</html>
